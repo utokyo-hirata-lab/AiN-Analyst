@@ -1,12 +1,40 @@
 import csv
-import glob
 import os
 import numpy as np
 from pandas import Series, DataFrame
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
+    
+try: import xlrd
+except ModuleNotFoundError:
+    print('xlrd module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install xlrd\"'+pycolor.END)
+    sys.exit()
 
+try: import xlwt
+except ModuleNotFoundError:
+    print('xlwt module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install xlwt\"'+pycolor.END)
+    sys.exit()
+
+try: import pprint
+except ModuleNotFoundError:
+    print('pprint module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install pprint\"'+pycolor.END)
+    sys.exit()
+
+try: import glob
+except ModuleNotFoundError:
+    print('glob module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install glob\"'+pycolor.END)
+    sys.exit()
+    
+try: import seaborn as sns
+except ModuleNotFoundError:
+    print('seaborn module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install seaborn\"'+pycolor.END)
+    sys.exit()
+    
 class pycolor:
     BLACK = '\033[30m'
     RED = '\033[31m'
@@ -195,3 +223,18 @@ class attom:
         plt.ylabel('cps')
         plt.savefig(name+'.png')
         plt.close()
+ 
+    def txt2xlsx(self):
+        wb = xlwt.Workbook()
+        for sheetname in glob.glob('data/*.txt'):
+            sheet = wb.add_sheet(sheetname.split('/')[1].split('.')[0])
+            line, row = 0, 0
+            for i in open(sheetname).readlines():
+                i = i.split(',')
+                for j in range(len(i)):
+                    sheet.write(line, j, i[j])
+                line += 1
+            print(pycolor.GREEN + 'OK : '+pycolor.BLUE + sheetname)
+        wb.save('attom_data.xls')
+        print(pycolor.REVERCE)
+        print(pycolor.BLUE+'attom_data.xls')
