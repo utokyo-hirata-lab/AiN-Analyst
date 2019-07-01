@@ -7,7 +7,8 @@
 ## 簡単な使用方法
 解析ファイルを作成し、hrtlab_core.pyをインポートしてください。
 ```python
-from hrtlab_core import *
+from hrtlab_core import *   #全てのツール
+from hrtlab_core import nu2 #nu2モジュールのみ
 ```
 
 ## Nu Plasma 2
@@ -40,7 +41,7 @@ jmc_1 = nu2.get_data('JMC1','H2') #JMC1のH2のデータをjmc_1に代入
 
 サンプルコード
 ```python
-from hrtlab_core import *
+from hrtlab_core import nu2
 
 nu2 = nu2(['H5','H2','L4'])#57Fe, 56Fe, 54Fe
 nu2.data('Data_28089.csv','blank1','b')
