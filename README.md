@@ -10,12 +10,14 @@ from hrtlab_core import *
 ```
 
 ## Nu Plasma 2
+
 csvファイルの読み込みはdata関数で行います。Nu Plasma 2の場合は、nu2を呼び出してdata関数を連結してください。
 nu2呼び出し時にカップを指定してください。
 ```python
 nu2 = nu2(['Cup1','Cup2','Cup3'])
 nu2.data('読み込むcsvファイルの名前','データの名前','データタイプの指定')
 ```
+
 data関数では、ブランクとサンプルでデータの読み込み方が異なります。ブランクの場合はid = 'b'、サンプルの場合は差し引くブランクを指定してください。
 サンプルのデータ読み込み時に、指定したブランクの平均値が差し引かれます。
 ```python
@@ -24,6 +26,17 @@ nu2.data('Data_28089.csv','blank1','b') #ブランクData_28089.csvをblank1と�
 nu2.data('Data_28097.csv','blank2','b') #ブランクData_28097.csvをblank2として読み込み
 nu2.data('Data_28090.csv','JMC1',['blank1','blank2']) #サンプルData_28090.csvをblank1とblank2の平均値を差し引いてJMC1として読み込み
 ```
+
+読み込んだデータは、check_data関数で確認できます。
+```python
+nu2.check_data('blank1') #blank1の中身をチェック
+```
+
+読み込んだデータをnu2関数以外で使用したい場合は、get_dataで取得できます。
+```python
+jmc_1 = nu2.get_data('JMC1','H2') #JMC1のH2のデータをjmc_1に代入
+```
+
 サンプルコード
 ```python
 from hrtlab_core import *
