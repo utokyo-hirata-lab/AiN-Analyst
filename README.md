@@ -8,6 +8,17 @@
 ```python
 from hrtlab_core import *
 ```
+csvファイルの読み込みはdata関数で行います。Nu Plasma 2の場合は、nu2を呼び出してdata関数を連結してください。
+nu2呼び出し時にカップを指定してください。
+data関数では、ブランクとサンプルでデータの読み込み方が異なります。ブランクの場合はid = 'b'、サンプルの場合は差し引くブランクを指定してください。
+サンプルのデータ読み込み時に、指定したブランクの平均値が差し引かれます。
+```python
+nu2 = nu2(['H5','H2','L4']) #57Fe, 56Fe, 54Fe
+nu2.data('Data_28089.csv','blank1','b')
+nu2.data('Data_28089.csv','blank1','b')
+nu2.data('Data_28097.csv','blank2','b')
+nu2.data('Data_28090.csv','JMC1',['blank1','blank2'])
+```
 
 ## Nu Plasma 2
 ```python
