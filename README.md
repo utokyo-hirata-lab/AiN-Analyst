@@ -3,6 +3,12 @@
 ### Nu Plasma 2, Attom, iCap TQの統合解析ツールです。
 2019年7月1日 NuPlasma2環境を実装
 
+## 簡単な使用方法
+解析ファイルを作成し、hrtlab_core.pyをインポートしてください。
+```python
+from hrtlab_core import *
+```
+
 ## Nu Plasma 2
 ```python
 from hrtlab_core import *
