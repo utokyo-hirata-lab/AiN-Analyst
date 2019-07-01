@@ -62,8 +62,10 @@ nu2.data('Data_28096.csv','JMC4',['blank1','blank2'])
 ## Attom
 
 Attomの場合は、attomを呼び出して使用してください。
+raw_dataディレクトリを作成し、予め全てのデータをこのディレクトリに格納しておいてください。
 ```python
-attom = attom()
-attom.binary2txt()
-attom.txt2png()
+attom = attom() 
+attom.binary2txt() #テキストファイルに変換します。
+attom.txt2png() #テキストファイルをもとにpngファイルを作成します。
+attom.txt2xlsx() #テキストファイルを全てエクセルファイルに統合します。
 ```
