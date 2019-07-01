@@ -1,8 +1,8 @@
 # Analyst
 
 ### Nu Plasma 2, Attom, iCap TQの統合解析ツールです。
-2019年7月1日 NuPlasma2環境を実装
-2019年7月1日 Attom環境を統合
+#### 2019年7月1日 NuPlasma2環境を実装
+#### 2019年7月1日 Attom環境を統合
 
 ## 簡単な使用方法
 解析ファイルを作成し、hrtlab_core.pyをインポートしてください。
@@ -57,4 +57,13 @@ nu2.data('Data_28096.csv','JMC4',['blank1','blank2'])
 
 #nu2.box_vis(['JMC1','JMC2','JMC3','JMC4'],'H2') #56Fe
 #nu2.dot_vis(calc_delta(JMC1,Wako1),'Cycle',"$\delta^{56}Fe(‰)$")
+```
+
+## Attom
+
+Attomの場合は、attomを呼び出して使用してください。
+```python
+attom = attom()
+attom.binary2txt()
+attom.txt2png()
 ```
