@@ -57,7 +57,7 @@ nu2.data('Data_28096.csv','JMC4',['blank1','blank2'])
 #a = nu2.get_data('JMC4','H2')
 
 #nu2.box_vis(['JMC1','JMC2','JMC3','JMC4'],'H2') #56Fe
-#nu2.dot_vis(calc_delta(JMC1,Wako1),'Cycle',"$\delta^{56}Fe(‰)$")
+#nu2.scatter_vis(calc_delta(JMC1,Wako1),'Cycle',"$\delta^{56}Fe(‰)$")
 ```
 
 ## Attom
