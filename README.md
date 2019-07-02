@@ -10,8 +10,6 @@ zipファイルをダウンロードし、以下のコマンドを実行して�
 ```
 python setup.py install
 ```
-
-## 簡単な使用方法
 解析ファイルを作成し、hrtlab_coreをインポートしてください。
 ```
 from hrtlab_core import *   #全てのツール
