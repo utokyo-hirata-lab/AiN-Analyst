@@ -29,6 +29,12 @@ nu2.data('Data_28097.csv','blank2','b') #ブランクData_28097.csvをblank2と�
 nu2.data('Data_28090.csv','JMC1',['blank1','blank2']) #サンプルData_28090.csvをblank1とblank2の平均値を差し引いてJMC1として読み込み
 ```
 
+読み込んだデータをもとに同位体比を計算することができます。calc_isotopic_ratio関数内で求めたい同位体比と対応するカップを指定してください。
+```python
+nu2.calc_isotopic_ratio('56Fe/54Fe','H2','L4')
+nu2.calc_isotopic_ratio('57Fe/54Fe','H5','L4')
+```
+
 読み込んだデータは、check_data関数で確認できます。
 ```python
 nu2.check_data('blank1') #blank1の中身をチェック
@@ -37,6 +43,16 @@ nu2.check_data('blank1') #blank1の中身をチェック
 読み込んだデータをnu2関数以外で使用したい場合は、get_dataで取得できます。
 ```python
 jmc_1 = nu2.get_data('JMC1','H2') #JMC1のH2のデータをjmc_1に代入
+```
+
+読み込んだデータをExcelフォーマットで出力することができます。export関数内で出力したいデータとファイル名を指定してください。
+```python
+nu2.export('JMC1','JMC1.xlsx')
+```
+
+オプションとして、読み込んだデータと同位体比の計算結果を全て出力することができます。その場合、変数名として'all'を指定してください。
+```python
+nu2.export('all','result.xlsx')
 ```
 
 サンプルコード
