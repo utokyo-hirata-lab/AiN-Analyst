@@ -99,6 +99,11 @@ result2 = nu2.get_data('56Fe/54Fe')
 print(result1)
 ```
 
+Pythonでmain.pyを実行してください。
+```Python
+python main.py
+```
+
 ## Attom
 
 Attomの場合は、`attom`を呼び出して使用してください。
