@@ -308,3 +308,7 @@ class attom:
         wb.save('attom_data.xls')
         print(pycolor.REVERCE)
         print(pycolor.BLUE+'attom_data.xls')
+
+class icap:
+    def __init__(self):
+        print('Sorry, now constructing...!')
