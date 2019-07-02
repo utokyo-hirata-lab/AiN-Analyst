@@ -168,7 +168,7 @@ class nu2:
         for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)] - blank[cupid].mean())
         return result
 
-    def calc_isotope_ratio(self,ratio,vsh,vsl):
+    def calc_isotopic_ratio(self,ratio,vsh,vsl):
         ir = pd.DataFrame(np.zeros([self.ir_length,len(self.dataset.keys())]),index=range(1,self.ir_length+1),columns=self.dataset.keys())
         for name in self.dataset.keys():
             high = self.dataset[name][self.cup.index(vsh)]
@@ -199,12 +199,20 @@ class nu2:
         sns.set_style('white')
         sns.set_palette('Greys')
         dataf = pd.DataFrame({})
-        for i in range(len(name)):dataf[name[i]] = self.dataset[name[i]][self.cup.index(el)]
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-        sns.boxplot(data=dataf, showfliers=False, ax=ax)
-        sns.stripplot(data=dataf, jitter=True, color='black', ax=ax)
-        plt.show()
+        if el in self.cup:
+            for i in range(len(name)):dataf[name[i]] = self.dataset[name[i]][self.cup.index(el)]
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            sns.boxplot(data=dataf, showfliers=False, ax=ax)
+            sns.stripplot(data=dataf, jitter=True, color='black', ax=ax)
+            plt.show()
+        elif el in self.ir_list:
+            for i in range(len(name)):dataf[name[i]] = self.ir_list[el][name[i]]
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            sns.boxplot(data=dataf, showfliers=False, ax=ax)
+            sns.stripplot(data=dataf, jitter=True, color='black', ax=ax)
+            plt.show()
 
 class attom:
     def __init__(self):
