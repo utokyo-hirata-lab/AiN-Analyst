@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='Analyst',
-    version='0.1.0',
+    version='0.1.1',
     author='Wataru Takahagi',
     author_email='watarut@eqchem.s.u-tokyo.ac.jp',
     url='https://github.com/utokyo-hirata-lab/Analyst',
