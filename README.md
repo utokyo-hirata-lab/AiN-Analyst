@@ -4,9 +4,15 @@
 - 2019年7月1日 NuPlasma2環境を実装
 - 2019年7月1日 Attom環境を統合
 
-## 簡単な使用方法
-解析ファイルを作成し、hrtlab_core.pyをインポートしてください。
-```python
+## インストール
+zipファイルをダウンロードし、以下のコマンドを実行してください。
+```
+python setup.py install
+```
+
+##簡単な使用方法
+解析ファイルを作成し、hrtlab_coreをインポートしてください。
+```
 from hrtlab_core import *   #全てのツール
 from hrtlab_core import nu2 #nu2モジュールのみ
 from hrtlab_core import attom #Attomモジュールのみ
