@@ -214,6 +214,17 @@ class nu2:
             sns.stripplot(data=dataf, jitter=True, color='black', ax=ax)
             plt.show()
 
+class nu2_geochronology():
+    def __init__(self):
+        pass
+
+    def mode_select():
+        print('Please select isotopic correctino mode !')
+        print('1 : U-Pb zircon (glass)')
+        print('2 : Pb-Pb zircon (glass)')
+        print('3 : U-Pb zircon (mineral)')
+        print('4 : Pb-Pb zircon (mineral)')
+
 class attom:
     def __init__(self):
         self.filepath = os.getcwd()+'/RunNo.csv'
