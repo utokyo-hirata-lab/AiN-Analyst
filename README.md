@@ -61,7 +61,7 @@ nu2.export('56Fe/54Fe','56Fe_per_54Fe.xlsx')  #56Fe/54Feの計算結果を出力
 nu2.export('all','result.xlsx') #全ての内容を出力
 ```
 
-サンプルコード
+サンプルコード (main.py)
 ```python
 from hrtlab_core import nu2
 
@@ -104,7 +104,7 @@ print(result1)
 Attomの場合は、`attom`を呼び出して使用してください。
 raw_dataディレクトリを作成し、予め全てのデータをこのディレクトリに格納しておいてください。
 ```python
-attom = attom() 
+attom = attom()
 attom.binary2txt() #テキストファイルに変換します。
 attom.txt2png() #テキストファイルをもとにpngファイルを作成します。
 attom.txt2xlsx() #テキストファイルを全てエクセルファイルに統合します。
