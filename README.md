@@ -1,19 +1,20 @@
 # Analyst
 
 ### Nu Plasma 2, Attom, iCap TQの統合解析ツールです。
-#### 2019年7月1日 NuPlasma2環境を実装
-#### 2019年7月1日 Attom環境を統合
+- 2019年7月1日 NuPlasma2環境を実装
+- 2019年7月1日 Attom環境を統合
 
 ## 簡単な使用方法
 解析ファイルを作成し、hrtlab_core.pyをインポートしてください。
 ```python
 from hrtlab_core import *   #全てのツール
 from hrtlab_core import nu2 #nu2モジュールのみ
+from hrtlab_core import attom #Attomモジュールのみ
 ```
 
 ## Nu Plasma 2
 
-csvファイルの読み込みはdata関数で行います。Nu Plasma 2の場合は、nu2を呼び出してdata関数を連結してください。
+csvファイルの読み込みはdata関数で行います。Nu Plasma 2の場合は、`nu2`を呼び出して`data`関数を連結してください。
 nu2呼び出し時にカップを指定してください。
 ```python
 nu2 = nu2(['Cup1','Cup2','Cup3'])
