@@ -1,7 +1,7 @@
 Metadata-Version: 1.1
-Name: Analyst
-Version: 0.1.1
-Summary: Analysis tools for Nu Plasma 2, iCap TQ and Attom
+Name: AiN-Analyst
+Version: 0.1.2
+Summary: Analysis tools for Attom, iCap TQ and Nu Plasma 2
 Home-page: https://github.com/utokyo-hirata-lab/Analyst
 Author: Wataru Takahagi
 Author-email: watarut@eqchem.s.u-tokyo.ac.jp
