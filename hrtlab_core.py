@@ -1,40 +1,11 @@
 import csv
 import os
+import sys
 import numpy as np
 from pandas import Series, DataFrame
 import pandas as pd
 import matplotlib.pyplot as plt
-    
-try: import xlrd
-except ModuleNotFoundError:
-    print('xlrd module was not found.')
-    print('You should run '+pycolor.RED +'\"pip install xlrd\"'+pycolor.END)
-    sys.exit()
 
-try: import xlwt
-except ModuleNotFoundError:
-    print('xlwt module was not found.')
-    print('You should run '+pycolor.RED +'\"pip install xlwt\"'+pycolor.END)
-    sys.exit()
-
-try: import pprint
-except ModuleNotFoundError:
-    print('pprint module was not found.')
-    print('You should run '+pycolor.RED +'\"pip install pprint\"'+pycolor.END)
-    sys.exit()
-
-try: import glob
-except ModuleNotFoundError:
-    print('glob module was not found.')
-    print('You should run '+pycolor.RED +'\"pip install glob\"'+pycolor.END)
-    sys.exit()
-    
-try: import seaborn as sns
-except ModuleNotFoundError:
-    print('seaborn module was not found.')
-    print('You should run '+pycolor.RED +'\"pip install seaborn\"'+pycolor.END)
-    sys.exit()
-    
 class pycolor:
     BLACK = '\033[30m'
     RED = '\033[31m'
@@ -50,28 +21,122 @@ class pycolor:
     INVISIBLE = '\033[08m'
     REVERCE = '\033[07m'
 
+try: import xlrd
+except ModuleNotFoundError:
+    print('xlrd module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install xlrd\"'+pycolor.END)
+    sys.exit()
+
+try: import openpyxl
+except ModuleNotFoundError:
+    print('openpyxl module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install openpyxl\"'+pycolor.END)
+    sys.exit()
+
+try: import xlwt
+except ModuleNotFoundError:
+    print('xlwt module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install xlwt\"'+pycolor.END)
+    sys.exit()
+
+try: import xlsxwriter
+except ModuleNotFoundError:
+    print('xlsxwriter module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install xlsxwriter\"'+pycolor.END)
+    sys.exit()
+
+try: import pprint
+except ModuleNotFoundError:
+    print('pprint module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install pprint\"'+pycolor.END)
+    sys.exit()
+
+try: import glob
+except ModuleNotFoundError:
+    print('glob module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install glob\"'+pycolor.END)
+    sys.exit()
+
+try: import seaborn as sns
+except ModuleNotFoundError:
+    print('seaborn module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install seaborn\"'+pycolor.END)
+    sys.exit()
+
 class nu2:
     def __init__(self,cup):
         self.cup = cup
         self.dataset = {}
-        self.delta = {}
+        self.ir_list = {}
+        self.ir = pd.DataFrame({})
+        self.ir_length = 0
+
+    def data(self,data,name,id):
+        if id == 'b':
+            self.dataset[name] = self.read_blank(data)
+            if self.ir_length < len(self.dataset[name][0]):self.ir_length = len(self.dataset[name][0])
+        else:
+            blank_list = [self.dataset[i] for i in id]
+            blank = [sum(e)/len(e) for e in zip(*blank_list)]
+            self.dataset[name] = self.read_sample(data,blank)
+            if self.ir_length < len(self.dataset[name][0]):self.ir_length = len(self.dataset[name][0])
 
     def check_params(self):
         print('Cup : ',self.cup)
 
     def check_data(self,name):
-        print(self.dataset[name])
-
-    def get_data(self,name,cup):
-        return self.dataset[name][self.cup.index(cup)]
-
-    def data(self,data,name,id):
-        if id == 'b':
-            self.dataset[name] = self.read_blank(data)
+        if name in self.dataset:
+            result = pd.DataFrame({})
+            for cup_name in self.cup:
+                result[cup_name] = self.dataset[name][self.cup.index(cup_name)]
+            print('\n'+name+'\n')
+            print(result)
+        elif name in self.ir_list:
+            print('\n'+name+'\n')
+            print(self.ir_list[name])
         else:
-            blank_list = [self.dataset[i] for i in id]
-            blank = [sum(e)/len(e) for e in zip(*blank_list)]
-            self.dataset[name] = self.read_sample(data,blank)
+            print('\n'+name+' : Not found !')
+
+    def get_data(self,name):
+        if name in self.dataset:
+            result = pd.DataFrame({})
+            for cup_name in self.cup:
+                result[cup_name] = self.dataset[name][self.cup.index(cup_name)]
+            return result
+        elif name in self.ir_list:
+            return self.ir_list[name]
+        else:
+            print('\n'+name+' : Not found !')
+
+    def export(self,data,filename):
+        with pd.ExcelWriter(filename, engine='xlsxwriter') as writer:
+            if data == 'all':
+                for i in self.dataset.keys():
+                    result = pd.DataFrame({})
+                    for cup_name in self.cup:
+                        result[cup_name] = self.dataset[i][self.cup.index(cup_name)]
+                    result.to_excel(writer,sheet_name=i)
+                    self.exformat(writer,result,i)
+                for i in self.ir_list.keys():
+                    self.ir_list[i].to_excel(writer,sheet_name=i.replace('/','per'))
+                    self.exformat(writer,self.ir_list[i],i.replace('/','per'))
+            elif data in self.dataset:
+                result = pd.DataFrame({})
+                for cup_name in self.cup:
+                    result[cup_name] = self.dataset[data][self.cup.index(cup_name)]
+                result.to_excel(writer, sheet_name=data)
+                self.exformat(writer,result,data.replace('/','per'))
+            elif data in self.ir_list:
+                self.ir_list[data].to_excel(writer,sheet_name=data.replace('/','per'))
+                self.exformat(writer,self.ir_list[data],data.replace('/','per'))
+            else:
+                print('\n'+data+' : Not found !')
+
+    def exformat(self,writer,data,sheetname):
+        workbook,worksheet = writer.book,writer.sheets[sheetname]
+        fmt = workbook.add_format({'bold': False,"border": 0})
+        [worksheet.write(0, col_num, col_value, fmt) for col_num, col_value in enumerate(data.columns.values, 1)]
+        [worksheet.write(idx_num, 0, idx_value, fmt) for idx_num, idx_value in enumerate(data.index.values, 1)]
 
     def read_blank(self,filename):
         file,j = open(filename).readlines(),0
@@ -85,7 +150,7 @@ class nu2:
             data[line] = [float(i) for i in data[line]]
         ind = [i.replace(' (','').replace(')','') for i in ind]
         df = pd.DataFrame(data,index=col,columns=ind[1::])
-        for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)].mean())
+        for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)])
         return result
 
     def read_sample(self,filename,blank):
@@ -100,18 +165,16 @@ class nu2:
             data[line] = [float(i) for i in data[line]]
         ind = [i.replace(' (','').replace(')','') for i in ind]
         df = pd.DataFrame(data,index=col,columns=ind[1::])
-        for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)] - blank[cupid])
+        for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)] - blank[cupid].mean())
         return result
 
-    def calc_delta(self,std,spl):
-        standard_5654 = std[1]/std[2]
-        sample_5654 = spl[1]/spl[2]
-        standard_5754 = std[0]/std[2]
-        sample_5754 = spl[0]/spl[2]
-        delta57 = ((sample_5754/standard_5754)-1)*1000
-        delta56 = ((sample_5654/standard_5654)-1)*1000
-        #print(sum(delta57)/len(delta57),sum(delta56)/len(delta56))
-        return delta56
+    def calc_isotope_ratio(self,ratio,vsh,vsl):
+        ir = pd.DataFrame(np.zeros([self.ir_length,len(self.dataset.keys())]),index=range(1,self.ir_length+1),columns=self.dataset.keys())
+        for name in self.dataset.keys():
+            high = self.dataset[name][self.cup.index(vsh)]
+            low = self.dataset[name][self.cup.index(vsl)]
+            ir[name] = high/low
+        self.ir_list[ratio] = ir
 
     def dot_vis(self,data,xlab,ylab):
         plt.figure()
@@ -126,13 +189,12 @@ class nu2:
         x = [i+1 for i in range(len(data))]
         plt.xlabel(xlab)
         plt.ylabel(ylab)
-        plt.xlim(0,41)
         plt.scatter(x,data,s=20,c='black')
         plt.grid(which='major',color='lightgray',linestyle='-')
         plt.grid(which='minor',color='lightgray',linestyle='-')
         plt.show()
 
-    def box_vis(self,name,el):
+    def box_vis(self,el,name):
         sns.set()
         sns.set_style('white')
         sns.set_palette('Greys')
@@ -223,7 +285,7 @@ class attom:
         plt.ylabel('cps')
         plt.savefig(name+'.png')
         plt.close()
- 
+
     def txt2xlsx(self):
         wb = xlwt.Workbook()
         for sheetname in glob.glob('data/*.txt'):
