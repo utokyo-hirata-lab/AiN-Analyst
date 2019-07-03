@@ -41,10 +41,19 @@ nu2.calc_isotopic_ratio('56Fe/54Fe','H2','L4')
 nu2.calc_isotopic_ratio('57Fe/54Fe','H5','L4')
 ```
 
+計算した同位体比をもとにδ値を計算できます。`calc_delta`関数で計算したい同位体比とスタンダード、サンプルを指定してください。
+同位体比はリストで引き渡すことで複数のδ値を同時に計算できます。
+```Python
+nu2.calc_delta(['56Fe/54Fe','57Fe/54Fe'],'JMC1','Wako1')
+nu2.calc_delta(['56Fe/54Fe','57Fe/54Fe'],'JMC2','Wako2')
+nu2.calc_delta(['56Fe/54Fe','57Fe/54Fe'],'JMC3','Wako3')
+```
+
 読み込んだデータは、`check_data`関数で確認できます。
 ```python
 nu2.check_data('blank1') #blank1の中身をチェック
 nu2.check_data('57Fe/54Fe') #57Fe/54Feの計算結果をチェック
+nu2.check_data('JMC1/Wako1') #JMC1/Wako1の計算されたδ値をチェック
 ```
 
 読み込んだデータを`nu2`関数以外で使用したい場合は、`get_data`で取得できます。
@@ -60,7 +69,7 @@ nu2.export('all','result.xlsx') #全ての内容を出力
 ```
 
 スリーアイソトーププロットは`three_isotope_vis`で作図できます。ラベルは自動生成されます。
-```
+```python
 nu2.three_isotope_vis(xaxis_data,yaxis_data)
 ```
 ![Figure_1](https://user-images.githubusercontent.com/7247018/60564156-9bbe2e00-9d99-11e9-8755-e6c2541e5b74.png)
