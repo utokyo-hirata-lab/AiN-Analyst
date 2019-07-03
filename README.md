@@ -1,7 +1,7 @@
 # AiN-Analyst
 
 ### Attom, iCap TQ, Nu Plasma 2 の統合解析ツールです。
-- 2019年7月1日 NuPlasma2環境を実装
+- 2019年7月1日 NuPlasma2環境を実装 (溶液モード)
 - 2019年7月1日 Attom環境を統合
 - 2019年7月2日 Installation Tool (setup.py)を実装
 
