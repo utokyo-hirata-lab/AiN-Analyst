@@ -59,6 +59,13 @@ nu2.export('56Fe/54Fe','56Fe_per_54Fe.xlsx')  #56Fe/54Feの計算結果を出力
 nu2.export('all','result.xlsx') #全ての内容を出力
 ```
 
+スリーアイソトーププロットは`three_isotope_vis`で作図できます。ラベルは自動生成されます。
+```
+nu2.three_isotope_vis(xaxis_data,yaxis_data)
+```
+![Figure_1](https://user-images.githubusercontent.com/7247018/60564156-9bbe2e00-9d99-11e9-8755-e6c2541e5b74.png)
+
+
 サンプルコード (main.py)
 ```python
 from hrtlab_core import nu2
