@@ -1,10 +1,12 @@
 import csv
 import os
 import sys
+import re
 import numpy as np
 from pandas import Series, DataFrame
 import pandas as pd
 import matplotlib.pyplot as plt
+from statistics import mean, median,variance,stdev
 
 class pycolor:
     BLACK = '\033[30m'
@@ -20,6 +22,22 @@ class pycolor:
     UNDERLINE = '\033[4m'
     INVISIBLE = '\033[08m'
     REVERCE = '\033[07m'
+
+def vis_params():
+    plt.rcParams['axes.axisbelow'] = True
+    plt.rcParams['font.family'] = 'sans-serif'
+    plt.rcParams['font.size'] = 12
+    plt.rcParams['xtick.direction'] = 'in'
+    plt.rcParams['ytick.direction'] = 'in'
+    plt.rcParams['xtick.major.width'] = 1.0
+    plt.rcParams['ytick.major.width'] = 1.0
+    plt.rcParams['lines.linewidth'] = 0.8
+
+try: from sklearn import linear_model;clf = linear_model.LinearRegression()
+except ModuleNotFoundError:
+    print('sklearn module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install sklearn\"'+pycolor.END)
+    sys.exit()
 
 try: import xlrd
 except ModuleNotFoundError:
@@ -68,8 +86,10 @@ class nu2:
         self.cup = cup
         self.dataset = {}
         self.ir_list = {}
-        self.ir = pd.DataFrame({})
+        #self.ir = pd.DataFrame({})
         self.ir_length = 0
+        self.delta_list = {}
+        #self.delta = pd.DataFrame({})
 
     def data(self,data,name,id):
         if id == 'b':
@@ -94,6 +114,9 @@ class nu2:
         elif name in self.ir_list:
             print('\n'+name+'\n')
             print(self.ir_list[name])
+        elif name in self.delta_list:
+            print('\n'+name+'\n')
+            print(self.delta_list[name])
         else:
             print('\n'+name+' : Not found !')
 
@@ -105,6 +128,8 @@ class nu2:
             return result
         elif name in self.ir_list:
             return self.ir_list[name]
+        elif name in self.delta_list:
+            return self.delta_list[name]
         else:
             print('\n'+name+' : Not found !')
 
@@ -120,6 +145,9 @@ class nu2:
                 for i in self.ir_list.keys():
                     self.ir_list[i].to_excel(writer,sheet_name=i.replace('/','per'))
                     self.exformat(writer,self.ir_list[i],i.replace('/','per'))
+                for i in self.delta_list.keys():
+                    self.delta_list[i].to_excel(writer,sheet_name=i.replace('/','per'))
+                    self.exformat(writer,self.delta_list[i],i.replace('/','per'))
             elif data in self.dataset:
                 result = pd.DataFrame({})
                 for cup_name in self.cup:
@@ -129,6 +157,9 @@ class nu2:
             elif data in self.ir_list:
                 self.ir_list[data].to_excel(writer,sheet_name=data.replace('/','per'))
                 self.exformat(writer,self.ir_list[data],data.replace('/','per'))
+            elif data in self.delta_list:
+                self.delta_list[data].to_excel(writer,sheet_name=data.replace('/','per'))
+                self.exformat(writer,self.delta_list[data],data.replace('/','per'))
             else:
                 print('\n'+data+' : Not found !')
 
@@ -176,16 +207,15 @@ class nu2:
             ir[name] = high/low
         self.ir_list[ratio] = ir
 
+    def calc_delta(self,ratio_list,standard,sample):
+        delta = pd.DataFrame({})
+        for ratio in ratio_list:
+            delta[ratio] = (self.ir_list[ratio][sample]/self.ir_list[ratio][standard]-1)*1000
+        self.delta_list[str(standard+'/'+sample)] = delta
+
     def dot_vis(self,data,xlab,ylab):
         plt.figure()
-        plt.rcParams['axes.axisbelow'] = True
-        plt.rcParams['font.family'] = 'sans-serif'
-        plt.rcParams['font.size'] = 10
-        plt.rcParams['xtick.direction'] = 'in'
-        plt.rcParams['ytick.direction'] = 'in'
-        plt.rcParams['xtick.major.width'] = 1.0
-        plt.rcParams['ytick.major.width'] = 1.0
-        plt.rcParams['lines.linewidth'] = 0.8
+        vis_params()
         x = [i+1 for i in range(len(data))]
         plt.xlabel(xlab)
         plt.ylabel(ylab)
@@ -213,6 +243,41 @@ class nu2:
             sns.boxplot(data=dataf, showfliers=False, ax=ax)
             sns.stripplot(data=dataf, jitter=True, color='black', ax=ax)
             plt.show()
+
+    def three_isotope_vis(self,xaxis,yaxis):
+        plt.figure()
+        vis_params()
+        x,y,xerr_list,yerr_list = [],[],[],[]
+        for line in self.delta_list:
+            x.append(self.delta_list[line][xaxis].mean())
+            xerr_list.append(2*stdev(self.delta_list[line][xaxis]))
+            y.append(self.delta_list[line][yaxis].mean())
+            yerr_list.append(2*stdev(self.delta_list[line][yaxis]))
+        z = np.polyfit(x, y, 1)
+        xl = [-1.5,1]
+        yl = np.poly1d(z)(xl)
+        plt.errorbar(x,y,xerr=xerr_list, yerr=yerr_list,fmt='ko',ecolor='black',capsize=3.0)
+        #plt.scatter(x,y,color='black')
+        plt.plot(xl, yl, color='black')
+        plt.xlabel('δ'+self.vis_label(xaxis)+'(/‰)')
+        plt.ylabel('δ'+self.vis_label(yaxis)+'(/‰)')
+        plt.xlim(xl)
+        plt.show()
+
+    def vis_label(self,axis):
+        clabel = axis.replace(re.sub("\\D", "", axis.split('/')[0]),u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in re.sub("\\D", "", axis.split('/')[0]))).replace(re.sub("\\D", "", axis.split('/')[1]),u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in re.sub("\\D", "", axis.split('/')[1])))
+        return clabel
+
+class nu2_geochronology():
+    def __init__(self):
+        pass
+
+    def mode_select():
+        print('Please select isotopic correctino mode !')
+        print('1 : U-Pb zircon (glass)')
+        print('2 : Pb-Pb zircon (glass)')
+        print('3 : U-Pb zircon (mineral)')
+        print('4 : Pb-Pb zircon (mineral)')
 
 class attom:
     def __init__(self):
