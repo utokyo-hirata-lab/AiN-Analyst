@@ -101,7 +101,16 @@ nu2.data('Data_28148.csv','JMC4',['blank7','blank8'])
 nu2.calc_isotopic_ratio('56Fe/54Fe','H2','L4')
 nu2.calc_isotopic_ratio('57Fe/54Fe','H5','L4')
 
+#δ値の計算
+nu2.calc_delta(['56Fe/54Fe','57Fe/54Fe'],'JMC1','Wako1')
+nu2.calc_delta(['56Fe/54Fe','57Fe/54Fe'],'JMC2','Wako2')
+nu2.calc_delta(['56Fe/54Fe','57Fe/54Fe'],'JMC3','Wako3')
+
 #データのチェックと取得と出力
+nu2.check_data('JMC1/Wako1')
+nu2.check_data('JMC2/Wako2')
+nu2.check_data('JMC3/Wako3')
+nu2.export('JMC2/Wako2','JMC2perWako2.xlsx')
 nu2.check_data('JMC1')
 nu2.check_data('56Fe/54Fe')
 nu2.check_data('57Fe/54Fe')
@@ -110,7 +119,11 @@ nu2.export('56Fe/54Fe','isotopic_ratio.xlsx')
 nu2.export('all','result.xlsx')
 result1 = nu2.get_data('JMC1')
 result2 = nu2.get_data('56Fe/54Fe')
-print(result1)
+result3 = nu2.get_data('JMC1/Wako1')
+print(result3)
+
+#作図
+nu2.three_isotope_vis('56Fe/54Fe','57Fe/54Fe') #x,y
 ```
 
 Pythonでmain.pyを実行してください。
