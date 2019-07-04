@@ -215,7 +215,6 @@ class nu2:
 
     def dot_vis(self,data,xlab,ylab):
         plt.figure()
-        vis_params()
         x = [i+1 for i in range(len(data))]
         plt.xlabel(xlab)
         plt.ylabel(ylab)
@@ -223,11 +222,13 @@ class nu2:
         plt.grid(which='major',color='lightgray',linestyle='-')
         plt.grid(which='minor',color='lightgray',linestyle='-')
         plt.show()
+        plt.close()
 
     def box_vis(self,el,name):
-        sns.set()
-        sns.set_style('white')
-        sns.set_palette('Greys')
+        #sns.set()
+        #sns.set_style('white')
+        #sns.set_palette('Greys')
+        vis_params()
         dataf = pd.DataFrame({})
         if el in self.cup:
             for i in range(len(name)):dataf[name[i]] = self.dataset[name[i]][self.cup.index(el)]
@@ -243,6 +244,7 @@ class nu2:
             sns.boxplot(data=dataf, showfliers=False, ax=ax)
             sns.stripplot(data=dataf, jitter=True, color='black', ax=ax)
             plt.show()
+        plt.close()
 
     def three_isotope_vis(self,xaxis,yaxis):
         plt.figure()
@@ -250,9 +252,9 @@ class nu2:
         x,y,xerr_list,yerr_list = [],[],[],[]
         for line in self.delta_list:
             x.append(self.delta_list[line][xaxis].mean())
-            xerr_list.append(2*stdev(self.delta_list[line][xaxis]))
+            xerr_list.append(2*stdev(self.delta_list[line][xaxis])/np.sqrt(len(x)))
             y.append(self.delta_list[line][yaxis].mean())
-            yerr_list.append(2*stdev(self.delta_list[line][yaxis]))
+            yerr_list.append(2*stdev(self.delta_list[line][yaxis])/np.sqrt(len(y)))
         z = np.polyfit(x, y, 1)
         xl = [-1.5,1]
         yl = np.poly1d(z)(xl)
@@ -263,6 +265,7 @@ class nu2:
         plt.ylabel('δ'+self.vis_label(yaxis)+'(/‰)')
         plt.xlim(xl)
         plt.show()
+        plt.close()
 
     def vis_label(self,axis):
         clabel = axis.replace(re.sub("\\D", "", axis.split('/')[0]),u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in re.sub("\\D", "", axis.split('/')[0]))).replace(re.sub("\\D", "", axis.split('/')[1]),u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in re.sub("\\D", "", axis.split('/')[1])))
