@@ -212,11 +212,9 @@ class nu2:
         std2 = standard[1]
         delta = pd.DataFrame({})
         for ratio in ratio_list:
-            #print(self.ir_list[ratio][std1],self.ir_list[ratio][std2])
-            std = (self.ir_list[ratio][std1]+self.ir_list[ratio][std2])/2
+            std = (self.ir_list[ratio][std1]+self.ir_list[ratio][std2])/len(standard)
             delta[ratio] = (self.ir_list[ratio][sample]/std-1)*1000
         self.delta_list[str('mean('+std1+std2+')/'+sample)] = delta
-        print(self.delta_list)
 
     def dot_vis(self,data,xlab,ylab):
         plt.figure()
