@@ -273,8 +273,8 @@ class nu2:
     def three_isotope_vis(self,xaxis,yaxis):
         plt.figure()
         vis_params()
-        denominator = (self.element.info(yaxis.split('/')[0])-self.element.info(yaxis.split('/')[1]))/(self.element.info(yaxis.split('/')[0])*self.element.info(yaxis.split('/')[1]))
-        fraction    = (self.element.info(xaxis.split('/')[0])-self.element.info(xaxis.split('/')[1]))/(self.element.info(xaxis.split('/')[0])*self.element.info(xaxis.split('/')[1]))
+        fraction    = (self.element.info(yaxis.split('/')[0])-self.element.info(yaxis.split('/')[1]))/(self.element.info(yaxis.split('/')[0])*self.element.info(yaxis.split('/')[1]))
+        denominator = (self.element.info(xaxis.split('/')[0])-self.element.info(xaxis.split('/')[1]))/(self.element.info(xaxis.split('/')[0])*self.element.info(xaxis.split('/')[1]))
         mfa = fraction / denominator
         print(mfa)
         x,y,xerr_list,yerr_list = [],[],[],[]
@@ -288,7 +288,7 @@ class nu2:
         plt.ylabel('δ'+self.vis_label(yaxis)+'(/‰)')
         xmfa = np.array(plt.xlim())
         ymfa = xmfa * mfa
-        plt.plot(xmfa,ymfa)
+        plt.plot(xmfa,ymfa,color='black')
         plt.tight_layout()
         plt.gca().set_xticklabels(['{:g}'.format(x) for x in plt.gca().get_xticks()])
         plt.gca().set_yticklabels(['{:g}'.format(x) for x in plt.gca().get_yticks()])
