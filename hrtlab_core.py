@@ -208,10 +208,15 @@ class nu2:
         self.ir_list[ratio] = ir
 
     def calc_delta(self,ratio_list,standard,sample):
+        std1 = standard[0]
+        std2 = standard[1]
         delta = pd.DataFrame({})
         for ratio in ratio_list:
-            delta[ratio] = (self.ir_list[ratio][sample]/self.ir_list[ratio][standard]-1)*1000
-        self.delta_list[str(standard+'/'+sample)] = delta
+            #print(self.ir_list[ratio][std1],self.ir_list[ratio][std2])
+            std = (self.ir_list[ratio][std1]+self.ir_list[ratio][std2])/2
+            delta[ratio] = (self.ir_list[ratio][sample]/std-1)*1000
+        self.delta_list[str('mean('+std1+std2+')/'+sample)] = delta
+        print(self.delta_list)
 
     def dot_vis(self,data,xlab,ylab):
         plt.figure()
@@ -256,7 +261,7 @@ class nu2:
             y.append(self.delta_list[line][yaxis].mean())
             yerr_list.append(2*stdev(self.delta_list[line][yaxis])/np.sqrt(len(y)))
         z = np.polyfit(x, y, 1)
-        xl = [-1.5,1]
+        xl = [-1,0]
         yl = np.poly1d(z)(xl)
         plt.errorbar(x,y,xerr=xerr_list, yerr=yerr_list,fmt='ko',ecolor='black',capsize=3.0)
         #plt.scatter(x,y,color='black')
