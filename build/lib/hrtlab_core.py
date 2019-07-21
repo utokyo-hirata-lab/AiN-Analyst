@@ -1,3 +1,4 @@
+#July 21, 2019
 import csv
 import os
 import sys
@@ -9,19 +10,36 @@ import matplotlib.pyplot as plt
 from statistics import mean, median,variance,stdev
 
 class pycolor:
-    BLACK = '\033[30m'
-    RED = '\033[31m'
-    GREEN = '\033[32m'
-    YELLOW = '\033[33m'
-    BLUE = '\033[34m'
-    PURPLE = '\033[35m'
-    CYAN = '\033[36m'
-    WHITE = '\033[37m'
-    END = '\033[0m'
-    BOLD = '\038[1m'
+    BLACK     = '\033[30m'
+    RED       = '\033[31m'
+    GREEN     = '\033[32m'
+    YELLOW    = '\033[33m'
+    BLUE      = '\033[34m'
+    PURPLE    = '\033[35m'
+    CYAN      = '\033[36m'
+    WHITE     = '\033[37m'
+    END       = '\033[0m'
+    BOLD      = '\038[1m'
     UNDERLINE = '\033[4m'
     INVISIBLE = '\033[08m'
-    REVERCE = '\033[07m'
+    REVERCE   = '\033[07m'
+
+class element:
+    def __init__(self):
+        self.DataBase = {}
+        self.DataBase.update({'54Fe':53.9396})
+        self.DataBase.update({'56Fe':55.9349})
+        self.DataBase.update({'57Fe':56.9354})
+
+    def add(self,el,mass):
+        self.DataBase.update({el:mass})
+
+    def info(self,el):
+        return self.DataBase[el]
+
+    def list(self):
+        for el in self.DataBase.keys():
+            print(el,':',self.DataBase[el])
 
 def vis_params():
     plt.rcParams['axes.axisbelow'] = True
@@ -83,6 +101,7 @@ except ModuleNotFoundError:
 
 class nu2:
     def __init__(self,cup):
+        self.element = element()
         self.cup = cup
         self.dataset = {}
         self.ir_list = {}
@@ -181,7 +200,7 @@ class nu2:
             data[line] = [float(i) for i in data[line]]
         ind = [i.replace(' (','').replace(')','') for i in ind]
         df = pd.DataFrame(data,index=col,columns=ind[1::])
-        for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)])
+        for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)] - df[self.cup[cupid]+str('Z1')])
         return result
 
     def read_sample(self,filename,blank):
@@ -196,7 +215,7 @@ class nu2:
             data[line] = [float(i) for i in data[line]]
         ind = [i.replace(' (','').replace(')','') for i in ind]
         df = pd.DataFrame(data,index=col,columns=ind[1::])
-        for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)] - blank[cupid].mean())
+        for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)] - df[self.cup[cupid]+str('Z1')] - blank[cupid].mean())
         return result
 
     def calc_isotopic_ratio(self,ratio,vsh,vsl):
@@ -214,9 +233,9 @@ class nu2:
         for ratio in ratio_list:
             #print(self.ir_list[ratio][std1],self.ir_list[ratio][std2])
             std = (self.ir_list[ratio][std1]+self.ir_list[ratio][std2])/2
-            delta[ratio] = (self.ir_list[ratio][sample]/std-1)*1000
+            delta[ratio] = ((self.ir_list[ratio][sample]/std-1)*1000)
         self.delta_list[str('mean('+std1+std2+')/'+sample)] = delta
-        print(self.delta_list)
+        #print(self.delta_list)
 
     def dot_vis(self,data,xlab,ylab):
         plt.figure()
@@ -226,6 +245,26 @@ class nu2:
         plt.scatter(x,data,s=20,c='black')
         plt.grid(which='major',color='lightgray',linestyle='-')
         plt.grid(which='minor',color='lightgray',linestyle='-')
+        plt.show()
+        plt.close()
+
+    def cycle_vis(self,el,name):
+        #vis_params()
+        dataf = pd.DataFrame({})
+        graygrid = []
+        if el in self.cup:
+            for i in range(len(name)):
+                dataf = pd.concat([dataf,self.dataset[name[i]][self.cup.index(el)]])
+                graygrid.append(len(dataf))
+        cycle = np.arange(0,len(dataf))
+        plt.figure()
+        for i in graygrid:
+            if i % (graygrid[0] * 2) == 0:
+                plt.axvspan(i-graygrid[0], i, color = "lightgrey")
+        plt.plot(cycle,dataf,'ko',markersize=2)
+        plt.tick_params(bottom='off',left='off',right='off',top='off',labelbottom="off")
+        plt.xlim(min(cycle),max(cycle))
+        plt.grid(axis='y')
         plt.show()
         plt.close()
 
@@ -254,21 +293,25 @@ class nu2:
     def three_isotope_vis(self,xaxis,yaxis):
         plt.figure()
         vis_params()
+        fraction    = (self.element.info(yaxis.split('/')[0])-self.element.info(yaxis.split('/')[1]))/(self.element.info(yaxis.split('/')[0])*self.element.info(yaxis.split('/')[1]))
+        denominator = (self.element.info(xaxis.split('/')[0])-self.element.info(xaxis.split('/')[1]))/(self.element.info(xaxis.split('/')[0])*self.element.info(xaxis.split('/')[1]))
+        mfa = fraction / denominator
+        print(mfa)
         x,y,xerr_list,yerr_list = [],[],[],[]
         for line in self.delta_list:
             x.append(self.delta_list[line][xaxis].mean())
             xerr_list.append(2*stdev(self.delta_list[line][xaxis])/np.sqrt(len(x)))
             y.append(self.delta_list[line][yaxis].mean())
             yerr_list.append(2*stdev(self.delta_list[line][yaxis])/np.sqrt(len(y)))
-        z = np.polyfit(x, y, 1)
-        xl = [-1,0]
-        yl = np.poly1d(z)(xl)
         plt.errorbar(x,y,xerr=xerr_list, yerr=yerr_list,fmt='ko',ecolor='black',capsize=3.0)
-        #plt.scatter(x,y,color='black')
-        plt.plot(xl, yl, color='black')
         plt.xlabel('δ'+self.vis_label(xaxis)+'(/‰)')
         plt.ylabel('δ'+self.vis_label(yaxis)+'(/‰)')
-        plt.xlim(xl)
+        xmfa = np.array(plt.xlim())
+        ymfa = xmfa * mfa
+        plt.plot(xmfa,ymfa,color='black')
+        plt.tight_layout()
+        plt.gca().set_xticklabels(['{:g}'.format(x) for x in plt.gca().get_xticks()])
+        plt.gca().set_yticklabels(['{:g}'.format(x) for x in plt.gca().get_yticks()])
         plt.show()
         plt.close()
 

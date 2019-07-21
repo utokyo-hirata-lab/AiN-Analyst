@@ -248,6 +248,25 @@ class nu2:
         plt.show()
         plt.close()
 
+    def cycle_vis(self,el,name):
+        dataf = pd.DataFrame({})
+        graygrid = []
+        if el in self.cup:
+            for i in range(len(name)):
+                dataf = pd.concat([dataf,self.dataset[name[i]][self.cup.index(el)]])
+                graygrid.append(len(dataf))
+        cycle = np.arange(0,len(dataf))
+        plt.figure()
+        for i in graygrid:
+            if i % (graygrid[0] * 2) == 0:
+                plt.axvspan(i-graygrid[0], i, color = "lightgrey")
+        plt.plot(cycle,dataf,'ko',markersize=2)
+        plt.tick_params(bottom='off',left='off',right='off',top='off',labelbottom="off")
+        plt.xlim(min(cycle),max(cycle))
+        plt.grid(axis='y')
+        plt.show()
+        plt.close()
+
     def box_vis(self,el,name):
         #sns.set()
         #sns.set_style('white')
