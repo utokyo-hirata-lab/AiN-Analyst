@@ -100,9 +100,10 @@ except ModuleNotFoundError:
     sys.exit()
 
 class nu2:
-    def __init__(self,cup):
+    def __init__(self,cup,cl):
         self.element = element()
         self.cup = cup
+        self.cup_element = cl
         self.dataset = {}
         self.ir_list = {}
         #self.ir = pd.DataFrame({})
@@ -218,7 +219,9 @@ class nu2:
         for cupid in range(len(self.cup)):result.append(df[self.cup[cupid]+str(1)] - df[self.cup[cupid]+str('Z1')] - blank[cupid].mean())
         return result
 
-    def calc_isotopic_ratio(self,ratio,vsh,vsl):
+    def calc_isotopic_ratio(self,ratio):
+        vsh = self.cup[self.cup_element.index(ratio.split('/')[0])]
+        vsl = self.cup[self.cup_element.index(ratio.split('/')[1])]
         ir = pd.DataFrame(np.zeros([self.ir_length,len(self.dataset.keys())]),index=range(1,self.ir_length+1),columns=self.dataset.keys())
         for name in self.dataset.keys():
             high = self.dataset[name][self.cup.index(vsh)]
@@ -240,17 +243,20 @@ class nu2:
     def cycle_vis(self,el,name):
         dataf = pd.DataFrame({})
         graygrid = []
-        if el in self.cup:
+        dataf = pd.DataFrame({})
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        if el in self.cup_element:
             for i in range(len(name)):
-                dataf = pd.concat([dataf,self.dataset[name[i]][self.cup.index(el)]])
+                dataf = pd.concat([dataf,self.dataset[name[i]][self.cup_element.index(el)]])
                 graygrid.append(len(dataf))
+                plt.ylabel('Intensity of '+self.vis_label(el)+' (/V)')
         elif el in self.ir_list:
-            print(self.ir_list[el])
             for i in range(len(name)):
                 dataf = pd.concat([dataf,self.ir_list[el][name[i]]])
                 graygrid.append(len(dataf))
+                plt.ylabel(self.vis_label(el))
         cycle = np.arange(0,len(dataf))
-        plt.figure()
         for i in graygrid:
             if i % (graygrid[0] * 2) == 0:
                 plt.axvspan(i-graygrid[0], i, color = "lightgrey")
@@ -264,20 +270,19 @@ class nu2:
     def box_vis(self,el,name):
         vis_params()
         dataf = pd.DataFrame({})
-        if el in self.cup:
-            for i in range(len(name)):dataf[name[i]] = self.dataset[name[i]][self.cup.index(el)]
-            fig = plt.figure()
-            ax = fig.add_subplot(1, 1, 1)
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        if el in self.cup_element:
+            for i in range(len(name)):dataf[name[i]] = self.dataset[name[i]][self.cup_element.index(el)]
             sns.boxplot(data=dataf, showfliers=False, ax=ax)
             sns.stripplot(data=dataf, jitter=True, color='black', ax=ax)
-            plt.show()
+            plt.ylabel('Intensity of '+self.vis_label(el)+' (/V)')
         elif el in self.ir_list:
             for i in range(len(name)):dataf[name[i]] = self.ir_list[el][name[i]]
-            fig = plt.figure()
-            ax = fig.add_subplot(1, 1, 1)
             sns.boxplot(data=dataf, showfliers=False, ax=ax)
             sns.stripplot(data=dataf, jitter=True, color='black', ax=ax)
-            plt.show()
+            plt.ylabel(self.vis_label(el))
+        plt.show()
         plt.close()
 
     def three_isotope_vis(self,xaxis,yaxis):
@@ -294,8 +299,8 @@ class nu2:
             y.append(self.delta_list[line][yaxis].mean())
             yerr_list.append(2*stdev(self.delta_list[line][yaxis])/np.sqrt(len(y)))
         plt.errorbar(x,y,xerr=xerr_list, yerr=yerr_list,fmt='ko',ecolor='black',capsize=3.0)
-        plt.xlabel('δ'+self.vis_label(xaxis)+'(/‰)')
-        plt.ylabel('δ'+self.vis_label(yaxis)+'(/‰)')
+        plt.xlabel('δ'+self.vis_label(xaxis)+' (‰)')
+        plt.ylabel('δ'+self.vis_label(yaxis)+' (‰)')
         xmfa = np.array(plt.xlim())
         ymfa = xmfa * mfa
         plt.plot(xmfa,ymfa,color='black')
@@ -306,7 +311,10 @@ class nu2:
         plt.close()
 
     def vis_label(self,axis):
-        clabel = axis.replace(re.sub("\\D", "", axis.split('/')[0]),u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in re.sub("\\D", "", axis.split('/')[0]))).replace(re.sub("\\D", "", axis.split('/')[1]),u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in re.sub("\\D", "", axis.split('/')[1])))
+        try:
+            clabel = axis.replace(re.sub("\\D", "", axis.split('/')[0]),u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in re.sub("\\D", "", axis.split('/')[0]))).replace(re.sub("\\D", "", axis.split('/')[1]),u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in re.sub("\\D", "", axis.split('/')[1])))
+        except IndexError:
+            clabel = axis.replace(re.sub("\\D", "", axis),u''.join(dict(zip(u"0123456789", u"⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in re.sub("\\D", "", axis)))
         return clabel
 
 class nu2_geochronology():
