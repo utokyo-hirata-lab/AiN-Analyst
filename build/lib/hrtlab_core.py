@@ -237,24 +237,17 @@ class nu2:
         self.delta_list[str('mean('+std1+std2+')/'+sample)] = delta
         #print(self.delta_list)
 
-    def dot_vis(self,data,xlab,ylab):
-        plt.figure()
-        x = [i+1 for i in range(len(data))]
-        plt.xlabel(xlab)
-        plt.ylabel(ylab)
-        plt.scatter(x,data,s=20,c='black')
-        plt.grid(which='major',color='lightgray',linestyle='-')
-        plt.grid(which='minor',color='lightgray',linestyle='-')
-        plt.show()
-        plt.close()
-
     def cycle_vis(self,el,name):
-        #vis_params()
         dataf = pd.DataFrame({})
         graygrid = []
         if el in self.cup:
             for i in range(len(name)):
                 dataf = pd.concat([dataf,self.dataset[name[i]][self.cup.index(el)]])
+                graygrid.append(len(dataf))
+        elif el in self.ir_list:
+            print(self.ir_list[el])
+            for i in range(len(name)):
+                dataf = pd.concat([dataf,self.ir_list[el][name[i]]])
                 graygrid.append(len(dataf))
         cycle = np.arange(0,len(dataf))
         plt.figure()
@@ -269,9 +262,6 @@ class nu2:
         plt.close()
 
     def box_vis(self,el,name):
-        #sns.set()
-        #sns.set_style('white')
-        #sns.set_palette('Greys')
         vis_params()
         dataf = pd.DataFrame({})
         if el in self.cup:
