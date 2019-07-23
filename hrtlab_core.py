@@ -7,6 +7,7 @@ import numpy as np
 from pandas import Series, DataFrame
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 from statistics import mean, median,variance,stdev
 
 class pycolor:
@@ -27,9 +28,16 @@ class pycolor:
 class element:
     def __init__(self):
         self.DataBase = {}
-        self.DataBase.update({'54Fe':53.9396})
-        self.DataBase.update({'56Fe':55.9349})
-        self.DataBase.update({'57Fe':56.9354})
+        self.DataBase.update({'54Fe':53.93961})
+        self.DataBase.update({'56Fe':55.93494})
+        self.DataBase.update({'57Fe':56.93539})
+        self.DataBase.update({'58Fe':57.93327})
+        self.DataBase.update({'63Cu':62.92960})
+        self.DataBase.update({'64Zn':63.92914})
+        self.DataBase.update({'65Cu':64.92779})
+        self.DataBase.update({'66Zn':65.92603})
+        self.DataBase.update({'67Zn':66.92713})
+        self.DataBase.update({'68Zn':67.92484})
 
     def add(self,el,mass):
         self.DataBase.update({el:mass})
@@ -42,7 +50,7 @@ class element:
             print(el,':',self.DataBase[el])
 
 def vis_params():
-    plt.rcParams['axes.axisbelow'] = True
+    #plt.rcParams['axes.axisbelow'] = True
     plt.rcParams['font.family'] = 'sans-serif'
     plt.rcParams['font.size'] = 12
     plt.rcParams['xtick.direction'] = 'in'
@@ -91,6 +99,12 @@ try: import glob
 except ModuleNotFoundError:
     print('glob module was not found.')
     print('You should run '+pycolor.RED +'\"pip install glob\"'+pycolor.END)
+    sys.exit()
+
+try: import pandas
+except ModuleNotFoundError:
+    print('pandas module was not found.')
+    print('You should run '+pycolor.RED +'\"pip install pandas\"'+pycolor.END)
     sys.exit()
 
 try: import seaborn as sns
@@ -241,6 +255,7 @@ class nu2:
         #print(self.delta_list)
 
     def cycle_vis(self,el,name):
+        vis_params()
         dataf = pd.DataFrame({})
         graygrid = []
         dataf = pd.DataFrame({})
@@ -284,7 +299,7 @@ class nu2:
             plt.ylabel(self.vis_label(el))
         plt.show()
         plt.close()
-
+    
     def three_isotope_vis(self,xaxis,yaxis):
         plt.figure()
         vis_params()
@@ -307,8 +322,11 @@ class nu2:
         plt.tight_layout()
         plt.gca().set_xticklabels(['{:g}'.format(x) for x in plt.gca().get_xticks()])
         plt.gca().set_yticklabels(['{:g}'.format(x) for x in plt.gca().get_yticks()])
-        plt.show()
-        plt.close()
+        #plt.show()
+        #plt.close()
+        pdf = PdfPages('three_isotope_plot.pdf')
+        pdf.savefig()
+        pdf.close()
 
     def vis_label(self,axis):
         try:
