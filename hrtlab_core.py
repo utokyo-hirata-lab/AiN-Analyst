@@ -157,8 +157,8 @@ class nu2:
     def get_data(self,name):
         if name in self.dataset:
             result = pd.DataFrame({})
-            for cup_name in self.cup:
-                result[cup_name] = self.dataset[name][self.cup.index(cup_name)]
+            for cup_name in self.cup_element:
+                result[cup_name] = self.dataset[name][self.cup_element.index(cup_name)]
             return result
         elif name in self.ir_list:
             return self.ir_list[name]
@@ -172,8 +172,8 @@ class nu2:
             if data == 'all':
                 for i in self.dataset.keys():
                     result = pd.DataFrame({})
-                    for cup_name in self.cup:
-                        result[cup_name] = self.dataset[i][self.cup.index(cup_name)]
+                    for cup_name in self.cup_element:
+                        result[cup_name] = self.dataset[i][self.cup_element.index(cup_name)]
                     result.to_excel(writer,sheet_name=i)
                     self.exformat(writer,result,i)
                 for i in self.ir_list.keys():
@@ -184,8 +184,8 @@ class nu2:
                     self.exformat(writer,self.delta_list[i],i.replace('/','per'))
             elif data in self.dataset:
                 result = pd.DataFrame({})
-                for cup_name in self.cup:
-                    result[cup_name] = self.dataset[data][self.cup.index(cup_name)]
+                for cup_name in self.cup_element:
+                    result[cup_name] = self.dataset[data][self.cup_element.index(cup_name)]
                 result.to_excel(writer, sheet_name=data)
                 self.exformat(writer,result,data.replace('/','per'))
             elif data in self.ir_list:
@@ -299,7 +299,7 @@ class nu2:
             plt.ylabel(self.vis_label(el))
         plt.show()
         plt.close()
-    
+
     def three_isotope_vis(self,xaxis,yaxis):
         plt.figure()
         vis_params()
