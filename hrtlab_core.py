@@ -7,8 +7,11 @@ import numpy as np
 from pandas import Series, DataFrame
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 from matplotlib.backends.backend_pdf import PdfPages
 from statistics import mean, median,variance,stdev
+import tkinter as tk
+import tkinter.messagebox, tkinter.filedialog
 
 class pycolor:
     BLACK     = '\033[30m'
@@ -255,30 +258,42 @@ class nu2:
         #print(self.delta_list)
 
     def cycle_vis(self,el,name):
+        Tintegr = 5 #integration time (s)
         vis_params()
         dataf = pd.DataFrame({})
         graygrid = []
         dataf = pd.DataFrame({})
         fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
+        axl = fig.add_subplot(1, 1, 1)
+        axr = axl.twinx()
         if el in self.cup_element:
             for i in range(len(name)):
                 dataf = pd.concat([dataf,self.dataset[name[i]][self.cup_element.index(el)]])
                 graygrid.append(len(dataf))
-                plt.ylabel('Intensity of '+self.vis_label(el)+' (/V)')
+                axl.set_ylabel('Intensity of '+self.vis_label(el)+' (/V)')
+                axr.set_ylabel('Deviation (%)')
         elif el in self.ir_list:
             for i in range(len(name)):
                 dataf = pd.concat([dataf,self.ir_list[el][name[i]]])
                 graygrid.append(len(dataf))
-                plt.ylabel(self.vis_label(el))
+                axl.set_ylabel(self.vis_label(el))
+                axr.set_ylabel('Deviation (‰)')
         cycle = np.arange(0,len(dataf))
         for i in graygrid:
             if i % (graygrid[0] * 2) == 0:
-                plt.axvspan(i-graygrid[0], i, color = "lightgrey")
-        plt.plot(cycle,dataf,'ko',markersize=2)
-        plt.tick_params(bottom='off',left='off',right='off',top='off',labelbottom="off")
-        plt.xlim(min(cycle),max(cycle))
-        plt.grid(axis='y')
+                axl.axvspan(i-graygrid[0], i, color = "lightgrey")
+        #axl.get_xaxis().set_major_locator(ticker.MultipleLocator(len(signals[0])*Tintegr))
+        axl.tick_params(labelbottom=False)
+        axl.plot(cycle,dataf,'ko',markersize=2)
+        if el in self.cup_element:
+            axr.set_ylim(100*min(axl.get_ylim())/mean(axl.get_ylim())-100,100*max(axl.get_ylim())/mean(axl.get_ylim())-100)
+        elif el in self.ir_list:
+            axr.set_ylim([(val/mean(axl.get_ylim())-1)*1000 for val in axl.get_ylim()])
+        axl.tick_params(bottom='False',left='False',right='False',top='False',labelbottom='False')
+        axl.set_xlim(min(cycle),max(cycle))
+        axl.grid(axis='y')
+        axr.grid(axis='y',linestyle='dashed')
+        plt.tight_layout()
         plt.show()
         plt.close()
 
@@ -306,7 +321,6 @@ class nu2:
         fraction    = (self.element.info(yaxis.split('/')[0])-self.element.info(yaxis.split('/')[1]))/(self.element.info(yaxis.split('/')[0])*self.element.info(yaxis.split('/')[1]))
         denominator = (self.element.info(xaxis.split('/')[0])-self.element.info(xaxis.split('/')[1]))/(self.element.info(xaxis.split('/')[0])*self.element.info(xaxis.split('/')[1]))
         mfa = fraction / denominator
-        print(mfa)
         x,y,xerr_list,yerr_list = [],[],[],[]
         for line in self.delta_list:
             x.append(self.delta_list[line][xaxis].mean())
