@@ -183,9 +183,16 @@ class nu2:
                 for i in self.ir_list.keys():
                     self.ir_list[i].to_excel(writer,sheet_name=i.replace('/','per'))
                     self.exformat(writer,self.ir_list[i],i.replace('/','per'))
+                output = pd.DataFrame({})
                 for i in self.delta_list.keys():
-                    self.delta_list[i].to_excel(writer,sheet_name=i.replace('/','per'))
-                    self.exformat(writer,self.delta_list[i],i.replace('/','per'))
+                    result = pd.DataFrame({})
+                    for j in list(self.delta_list[i].keys()):
+                        result[i.split('/')[1]] = pd.Series(self.delta_list[i])
+                        result[i.split('/')[1]+'_SE'] = pd.Series(self.delta_SE_list[i])
+                        print(self.delta_SE_list[i])
+                    output = pd.concat([output,result],axis=1)
+                output.to_excel(writer,sheet_name='delta')
+                self.exformat(writer,output,'delta')
             elif data in self.dataset:
                 result = pd.DataFrame({})
                 for cup_name in self.cup_element:
@@ -196,8 +203,11 @@ class nu2:
                 self.ir_list[data].to_excel(writer,sheet_name=data.replace('/','per'))
                 self.exformat(writer,self.ir_list[data],data.replace('/','per'))
             elif data in self.delta_list:
-                self.delta_list[data].to_excel(writer,sheet_name=data.replace('/','per'))
-                self.exformat(writer,self.delta_list[data],data.replace('/','per'))
+                result = pd.DataFrame({})
+                for i in list(self.delta_list[data].keys()):
+                    result[data] = pd.concat([pd.Series(self.delta_list[data]),pd.Series(self.delta_SE_list[data])])
+                result.to_excel(writer,sheet_name=data.replace('/','per'))
+                self.exformat(writer,result,data.replace('/','per'))
             else:
                 print('\n'+data+' : Not found !')
 
@@ -263,7 +273,7 @@ class nu2:
             #print(delta[ratio])
             #print(np.sqrt((sample_SE/std.mean())**2+(quotient.mean()*std_SE)**2))
             delta_SE.update({ratio:np.sqrt((sample_SE/std.mean())**2+(quotient*std_SE/std.mean())**2)*1000})
-            print(delta_SE)
+            #print(delta_SE)
         #print(delta_SE)
         self.delta_list[str('mean('+std1+std2+')/'+sample)] = delta
         self.delta_SE_list[str('mean('+std1+std2+')/'+sample)] = delta_SE
@@ -347,6 +357,7 @@ class nu2:
         xmfa = np.array(plt.xlim())
         ymfa = xmfa * mfa
         plt.plot(xmfa,ymfa,color='black')
+        plt.grid(color='lightgray')
         plt.tight_layout()
         plt.gca().set_xticklabels(['{:g}'.format(x) for x in plt.gca().get_xticks()])
         plt.gca().set_yticklabels(['{:g}'.format(x) for x in plt.gca().get_yticks()])
