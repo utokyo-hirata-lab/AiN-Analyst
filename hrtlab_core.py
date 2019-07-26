@@ -258,11 +258,11 @@ class nu2:
             std_SE    = np.sqrt(std1_SE**2+std2_SE**2)/2
             std       = (self.ir_list[ratio][std1]+self.ir_list[ratio][std2])/2
             smp       = self.ir_list[ratio][sample]
-            quotient  = smp/std
-            delta.update({ratio:((quotient.mean()-1)*1000)})
+            quotient  = smp.mean()/std.mean()
+            delta.update({ratio:((quotient-1)*1000)})
             #print(delta[ratio])
             #print(np.sqrt((sample_SE/std.mean())**2+(quotient.mean()*std_SE)**2))
-            delta_SE.update({ratio:np.sqrt((sample_SE/std.mean())**2+(quotient.mean()*std_SE)**2)})
+            delta_SE.update({ratio:np.sqrt((sample_SE/std.mean())**2+(quotient*std_SE/std.mean())**2)*1000})
             print(delta_SE)
         #print(delta_SE)
         self.delta_list[str('mean('+std1+std2+')/'+sample)] = delta
