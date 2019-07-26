@@ -126,6 +126,7 @@ class nu2:
         #self.ir = pd.DataFrame({})
         self.ir_length = 0
         self.delta_list = {}
+        self.delta_SE_list = {}
         #self.delta = pd.DataFrame({})
 
     def data(self,data,name,id):
@@ -249,12 +250,25 @@ class nu2:
     def calc_delta(self,ratio_list,standard,sample):
         std1 = standard[0]
         std2 = standard[1]
-        delta = pd.DataFrame({})
+        delta,delta_SE = {},{}
         for ratio in ratio_list:
-            #print(self.ir_list[ratio][std1],self.ir_list[ratio][std2])
-            std = (self.ir_list[ratio][std1]+self.ir_list[ratio][std2])/2
-            delta[ratio] = ((self.ir_list[ratio][sample]/std-1)*1000)
+            std1_SE   = np.std(self.ir_list[ratio][std1],ddof=1)/np.sqrt(len(self.ir_list[ratio][std1]))
+            std2_SE   = np.std(self.ir_list[ratio][std2],ddof=1)/np.sqrt(len(self.ir_list[ratio][std2]))
+            sample_SE = np.std(self.ir_list[ratio][sample],ddof=1)/np.sqrt(len(self.ir_list[ratio][sample]))
+            std_SE    = np.sqrt(std1_SE**2+std2_SE**2)/2
+            std       = (self.ir_list[ratio][std1]+self.ir_list[ratio][std2])/2
+            smp       = self.ir_list[ratio][sample]
+            quotient  = smp/std
+            delta.update({ratio:((quotient.mean()-1)*1000)})
+            #print(delta[ratio])
+            #print(np.sqrt((sample_SE/std.mean())**2+(quotient.mean()*std_SE)**2))
+            delta_SE.update({ratio:np.sqrt((sample_SE/std.mean())**2+(quotient.mean()*std_SE)**2)})
+            print(delta_SE)
+        #print(delta_SE)
         self.delta_list[str('mean('+std1+std2+')/'+sample)] = delta
+        self.delta_SE_list[str('mean('+std1+std2+')/'+sample)] = delta_SE
+        print(self.delta_SE_list)
+        #print(self.delta_SE_list)
         #print(self.delta_list)
 
     def cycle_vis(self,el,name):
@@ -321,13 +335,12 @@ class nu2:
         fraction    = (self.element.info(yaxis.split('/')[0])-self.element.info(yaxis.split('/')[1]))/(self.element.info(yaxis.split('/')[0])*self.element.info(yaxis.split('/')[1]))
         denominator = (self.element.info(xaxis.split('/')[0])-self.element.info(xaxis.split('/')[1]))/(self.element.info(xaxis.split('/')[0])*self.element.info(xaxis.split('/')[1]))
         mfa = fraction / denominator
-        print(mfa)
         x,y,xerr_list,yerr_list = [],[],[],[]
         for line in self.delta_list:
-            x.append(self.delta_list[line][xaxis].mean())
-            xerr_list.append(2*stdev(self.delta_list[line][xaxis])/np.sqrt(len(x)))
-            y.append(self.delta_list[line][yaxis].mean())
-            yerr_list.append(2*stdev(self.delta_list[line][yaxis])/np.sqrt(len(y)))
+            x.append(self.delta_list[line][xaxis])
+            xerr_list.append(2*self.delta_SE_list[line][xaxis])
+            y.append(self.delta_list[line][yaxis])
+            yerr_list.append(2*self.delta_SE_list[line][yaxis])
         plt.errorbar(x,y,xerr=xerr_list, yerr=yerr_list,fmt='ko',ecolor='black',capsize=3.0)
         plt.xlabel('δ'+self.vis_label(xaxis)+' (‰)')
         plt.ylabel('δ'+self.vis_label(yaxis)+' (‰)')
