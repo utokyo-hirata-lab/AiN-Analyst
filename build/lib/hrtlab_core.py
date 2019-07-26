@@ -189,7 +189,6 @@ class nu2:
                     for j in list(self.delta_list[i].keys()):
                         result[i.split('/')[1]] = pd.Series(self.delta_list[i])
                         result[i.split('/')[1]+'_SE'] = pd.Series(self.delta_SE_list[i])
-                        print(self.delta_SE_list[i])
                     output = pd.concat([output,result],axis=1)
                 output.to_excel(writer,sheet_name='delta')
                 self.exformat(writer,output,'delta')
@@ -270,16 +269,9 @@ class nu2:
             smp       = self.ir_list[ratio][sample]
             quotient  = smp.mean()/std.mean()
             delta.update({ratio:((quotient-1)*1000)})
-            #print(delta[ratio])
-            #print(np.sqrt((sample_SE/std.mean())**2+(quotient.mean()*std_SE)**2))
             delta_SE.update({ratio:np.sqrt((sample_SE/std.mean())**2+(quotient*std_SE/std.mean())**2)*1000})
-            #print(delta_SE)
-        #print(delta_SE)
         self.delta_list[str('mean('+std1+std2+')/'+sample)] = delta
         self.delta_SE_list[str('mean('+std1+std2+')/'+sample)] = delta_SE
-        print(self.delta_SE_list)
-        #print(self.delta_SE_list)
-        #print(self.delta_list)
 
     def cycle_vis(self,el,name):
         Tintegr = 5 #integration time (s)
