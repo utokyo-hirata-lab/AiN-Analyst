@@ -124,8 +124,8 @@ class template:
     def __init__(self):
         pass
 
-    def nu2(self):
-        with open('main.py', 'w') as f:
+    def nu2(self,result):
+        with open(result, 'w') as f:
             f.write("from hrtlab_core import nu2\n")
             f.write("#データの読み込み\n")
             f.write("nu2 = nu2(['H7','H3','L1'],['44Ca','43Ca','42Ca'])\n")

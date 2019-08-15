@@ -124,8 +124,8 @@ class template:
     def __init__(self):
         pass
 
-    def nu2(self):
-        with open('main.py', 'w') as f:
+    def nu2(self,result):
+        with open(result, 'w') as f:
             f.write("from hrtlab_core import nu2\n")
             f.write("#データの読み込み\n")
             f.write("nu2 = nu2(['H7','H3','L1'],['44Ca','43Ca','42Ca'])\n")
@@ -138,8 +138,7 @@ class template:
             f.write("#nu2.data('Data_28485.csv','STD3',['blank1','blank2'])\n")
             f.write("#nu2.data('Data_28486.csv','SAMPLE3',['blank1','blank2'])\n")
             f.write("#nu2.data('Data_28487.csv','STD4',['blank1','blank2'])\n")
-            for file in sorted(glob.glob('*.csv')):
-                f.write("nu2.data('"+file+"','','')\n")
+            for file in sorted(glob.glob('*.csv')):f.write("nu2.data('"+file+"','','')\n")
             f.write("#同位体比の計算\n")
             f.write("nu2.calc_isotopic_ratio('44Ca/42Ca')\n")
             f.write("nu2.calc_isotopic_ratio('43Ca/42Ca')\n")
