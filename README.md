@@ -19,11 +19,11 @@ from hrtlab_core import attom #Attomモジュールのみ
 
 ## Nu Plasma 2
 
-解析ファイルのテンプレートを作成します。
+解析ファイルのテンプレートを呼び出します。
 ```
 $ python
 >>> from hrtlab_core import template
-template().nu2()
+>>> template().nu2()
 ```
 
 csvファイルの読み込みは`data`関数で行います。Nu Plasma 2の場合は、`nu2`を呼び出して`data`関数を連結してください。
