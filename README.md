@@ -23,7 +23,7 @@ from hrtlab_core import attom #Attomモジュールのみ
 ```
 $ python
 >>> from hrtlab_core import template
->>> template().nu2()
+>>> template().nu2('main_nu2.py')
 ```
 
 csvファイルの読み込みは`data`関数で行います。Nu Plasma 2の場合は、`nu2`を呼び出して`data`関数を連結してください。
