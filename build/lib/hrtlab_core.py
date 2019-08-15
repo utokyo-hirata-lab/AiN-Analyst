@@ -31,6 +31,9 @@ class pycolor:
 class element:
     def __init__(self):
         self.DataBase = {}
+        self.DataBase.update({'42Ca':41.95862})
+        self.DataBase.update({'43Ca':42.95877})
+        self.DataBase.update({'44Ca':43.95548})
         self.DataBase.update({'54Fe':53.93961})
         self.DataBase.update({'56Fe':55.93494})
         self.DataBase.update({'57Fe':56.93539})
@@ -55,7 +58,7 @@ class element:
 def vis_params():
     #plt.rcParams['axes.axisbelow'] = True
     plt.rcParams['font.family'] = 'sans-serif'
-    plt.rcParams['font.size'] = 12
+    plt.rcParams['font.size'] = 18
     plt.rcParams['xtick.direction'] = 'in'
     plt.rcParams['ytick.direction'] = 'in'
     plt.rcParams['xtick.major.width'] = 1.0
@@ -279,14 +282,14 @@ class nu2:
         dataf = pd.DataFrame({})
         graygrid = []
         dataf = pd.DataFrame({})
-        fig = plt.figure()
+        fig = plt.figure(figsize=(10,7))
         axl = fig.add_subplot(1, 1, 1)
         axr = axl.twinx()
         if el in self.cup_element:
             for i in range(len(name)):
                 dataf = pd.concat([dataf,self.dataset[name[i]][self.cup_element.index(el)]])
                 graygrid.append(len(dataf))
-                axl.set_ylabel('Intensity of '+self.vis_label(el)+' (/V)')
+                axl.set_ylabel('Intensity of '+self.vis_label(el)+' / V')
                 axr.set_ylabel('Deviation (%)')
         elif el in self.ir_list:
             for i in range(len(name)):
@@ -307,9 +310,10 @@ class nu2:
             axr.set_ylim([(val/mean(axl.get_ylim())-1)*1000 for val in axl.get_ylim()])
         axl.tick_params(bottom='False',left='False',right='False',top='False',labelbottom='False')
         axl.set_xlim(min(cycle),max(cycle))
+        axl.locator_params(axis='y',nbins=8);axr.locator_params(axis='y',nbins=8)
         axl.grid(axis='y')
         axr.grid(axis='y',linestyle='dashed')
-        plt.tight_layout()
+        #plt.tight_layout()
         plt.show()
         plt.close()
 
@@ -322,7 +326,7 @@ class nu2:
             for i in range(len(name)):dataf[name[i]] = self.dataset[name[i]][self.cup_element.index(el)]
             sns.boxplot(data=dataf, showfliers=False, ax=ax)
             sns.stripplot(data=dataf, jitter=True, color='black', ax=ax)
-            plt.ylabel('Intensity of '+self.vis_label(el)+' (/V)')
+            plt.ylabel('Intensity of '+self.vis_label(el)+' / V')
         elif el in self.ir_list:
             for i in range(len(name)):dataf[name[i]] = self.ir_list[el][name[i]]
             sns.boxplot(data=dataf, showfliers=False, ax=ax)
@@ -332,7 +336,7 @@ class nu2:
         plt.close()
 
     def three_isotope_vis(self,xaxis,yaxis):
-        plt.figure()
+        plt.figure(figsize=(10,7))
         vis_params()
         fraction    = (self.element.info(yaxis.split('/')[0])-self.element.info(yaxis.split('/')[1]))/(self.element.info(yaxis.split('/')[0])*self.element.info(yaxis.split('/')[1]))
         denominator = (self.element.info(xaxis.split('/')[0])-self.element.info(xaxis.split('/')[1]))/(self.element.info(xaxis.split('/')[0])*self.element.info(xaxis.split('/')[1]))
@@ -350,7 +354,7 @@ class nu2:
         ymfa = xmfa * mfa
         plt.plot(xmfa,ymfa,color='black')
         plt.grid(color='lightgray')
-        plt.tight_layout()
+        #plt.tight_layout()
         plt.gca().set_xticklabels(['{:g}'.format(x) for x in plt.gca().get_xticks()])
         plt.gca().set_yticklabels(['{:g}'.format(x) for x in plt.gca().get_yticks()])
         #plt.show()
