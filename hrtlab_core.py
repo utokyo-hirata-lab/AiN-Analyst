@@ -1,4 +1,4 @@
-#July 21, 2019
+#August 15, 2019
 import csv
 import os
 import sys
@@ -12,6 +12,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from statistics import mean, median,variance,stdev
 import tkinter as tk
 import tkinter.messagebox, tkinter.filedialog
+import glob
 
 class pycolor:
     BLACK     = '\033[30m'
@@ -118,6 +119,43 @@ except ModuleNotFoundError:
     print('seaborn module was not found.')
     print('You should run '+pycolor.RED +'\"pip install seaborn\"'+pycolor.END)
     sys.exit()
+
+class template:
+    def __init__(self):
+        pass
+
+    def nu2(self):
+        with open('main.py', 'w') as f:
+            f.write("from hrtlab_core import nu2\n")
+            f.write("#データの読み込み\n")
+            f.write("nu2 = nu2(['H7','H3','L1'],['44Ca','43Ca','42Ca'])\n")
+            f.write("#nu2.data('Data_28480.csv','blank1','b')\n")
+            f.write("#nu2.data('Data_28488.csv','blank2','b')\n")
+            f.write("#nu2.data('Data_28481.csv','STD1',['blank1','blank2'])\n")
+            f.write("#nu2.data('Data_28482.csv','SAMPLE1',['blank1','blank2'])\n")
+            f.write("#nu2.data('Data_28483.csv','STD2',['blank1','blank2'])\n")
+            f.write("#nu2.data('Data_28484.csv','SAMPLE2',['blank1','blank2'])\n")
+            f.write("#nu2.data('Data_28485.csv','STD3',['blank1','blank2'])\n")
+            f.write("#nu2.data('Data_28486.csv','SAMPLE3',['blank1','blank2'])\n")
+            f.write("#nu2.data('Data_28487.csv','STD4',['blank1','blank2'])\n")
+            for file in sorted(glob.glob('*.csv')):f.write("nu2.data('"+file+"','','')\n")
+            f.write("#同位体比の計算\n")
+            f.write("nu2.calc_isotopic_ratio('44Ca/42Ca')\n")
+            f.write("nu2.calc_isotopic_ratio('43Ca/42Ca')\n")
+            f.write("#δ値の計算\n")
+            f.write("nu2.calc_delta(['43Ca/42Ca','44Ca/42Ca'],['STD1','STD2'],'SAMPLE1')\n")
+            f.write("nu2.calc_delta(['43Ca/42Ca','44Ca/42Ca'],['STD2','STD3'],'SAMPLE2')\n")
+            f.write("nu2.calc_delta(['43Ca/42Ca','44Ca/42Ca'],['STD3','STD4'],'SAMPLE3')\n")
+            f.write("#データのチェックと取得と出力\n")
+            f.write("nu2.export('all','result.xlsx')\n")
+            f.write("#作図\n")
+            f.write("nu2.cycle_vis('42Ca',['blank1','blank2'])\n")
+            f.write("nu2.cycle_vis('42Ca',['STD1','STD2','STD3','STD4'])\n")
+            f.write("nu2.cycle_vis('43Ca',['STD1','STD2','STD3','STD4'])\n")
+            f.write("nu2.cycle_vis('44Ca',['STD1','STD2','STD3','STD4'])\n")
+            f.write("nu2.cycle_vis('44Ca/42Ca',['STD1','STD2','STD3','STD4'])\n")
+            f.write("nu2.cycle_vis('43Ca/42Ca',['STD1','STD2','STD3','STD4'])\n")
+            f.write("nu2.three_isotope_vis('43Ca/42Ca','44Ca/42Ca')\n")
 
 class nu2:
     def __init__(self,cup,cl):
